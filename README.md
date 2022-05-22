@@ -2,6 +2,7 @@
 ## Dependencies
 * Pydicom
 * Pytesseract
+* Tesseract Executable
 * OpenCV
 * Numpy
 * Matplotlib
