@@ -18,6 +18,7 @@ while True:
 
 deidentify = Deidentify()
 ds = deidentify.deidentify_image(ds)
+ds = deidentify.deidentify_metadata(ds)
 
 # Save de-identified image
 out_path = path.rstrip('.dcm')

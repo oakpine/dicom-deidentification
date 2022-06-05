@@ -1,3 +1,4 @@
+from lib2to3.pgen2.parse import ParseError
 import cv2
 from matplotlib import scale
 from numpy.core.arrayprint import array2string
@@ -7,6 +8,7 @@ import pytesseract
 from pytesseract import Output
 import matplotlib.pyplot as plt
 from dateutil.parser import parse
+from dateutil.parser._parser import ParserError
 import re
 
 from imutils.object_detection import non_max_suppression
@@ -178,18 +180,19 @@ class Deidentify:
 
                 # Use datetime comparison for dates
                 for f in self.date_fields:
-                    try:
-                        if parse(text) == parse(ds[f].value):
-                            img = self.censor_text(img, data, rect, i)
-                            break # Test is already censored
-                    except: # Catch if field doesn't exist
-                        continue
+                    if f in ds: # Check if field exists
+                        try:
+                            if parse(text) == parse(ds[f].value):
+                                img = self.censor_text(img, data, rect, i)
+                                break # Text is already censored
+                        except (ParserError): # Catch if read text is not a date
+                            continue
 
                 text = re.sub(r'[^\w\s]', '', text) # Remove punctuation
 
                 # Loop through sensitive fields
                 for f in self.fields:
-                    try:
+                    if f in ds: # Check if field exists
                         if ds[f].value == '': # Continue if the field is empty
                             continue 
 
@@ -208,8 +211,6 @@ class Deidentify:
                             except Exception as e:
                                 print(e)
                             break # Text is already censored
-                    except: # Catch if field doesn't exist
-                        continue
         return img
 
     def censor_text(self, img, data, rect, i):
@@ -320,4 +321,11 @@ class Deidentify:
         # Update and save de-identified image
         ds.PixelData = img.tobytes()
 
+        return ds
+
+    def deidentify_metadata(self, ds):
+        all_fields = self.fields + self.date_fields
+        for f in all_fields:
+            if f in ds:
+                ds[f].value = ''
         return ds
