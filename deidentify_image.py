@@ -316,7 +316,7 @@ class Deidentify:
 
         plt.imshow(img, cmap="gray")
         # plt.savefig("image4_text.png", dpi=2000)
-        plt.show()
+        # plt.show()
 
         # Update and save de-identified image
         ds.PixelData = img.tobytes()
@@ -329,3 +329,8 @@ class Deidentify:
             if f in ds:
                 ds[f].value = ''
         return ds
+
+    def get_pixels(self, path):
+        ds = dcmread(path)
+        arr = ds.pixel_array
+        return arr
