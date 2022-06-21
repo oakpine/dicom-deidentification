@@ -176,7 +176,7 @@ class Deidentify:
             if data['text'][i] == '': # Continue if text is empty
                 continue
             for text in re.split('[, ]', data['text'][i]): # Split on comma or space
-                print(text)
+                # print(text)
 
                 # Use datetime comparison for dates
                 for f in self.date_fields:
